@@ -1,10 +1,17 @@
 using managementorder.Helper;
+using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<IConfiguration>(config);
+// Register HttpClient as a named service for "ProductApi"
+builder.Services.AddHttpClient("ProductApi", client =>
+{
+    client.BaseAddress = new Uri(config.GetValue<string>("ApiParam:url")); // replace with actual API base URL
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -24,6 +31,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Product}/{action=Index}/{id?}");
 
 app.Run();
