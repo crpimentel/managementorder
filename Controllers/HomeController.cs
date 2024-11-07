@@ -17,7 +17,14 @@ namespace managementorder.Controllers
         {
             return View();
         }
-
+        public IActionResult IndexTest()
+        {
+            return View();
+        }
+        public IActionResult IndexTest2()
+        {
+            return View();
+        }
         public IActionResult Privacy()
         {
             return View();
