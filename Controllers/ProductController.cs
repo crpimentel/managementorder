@@ -1,6 +1,9 @@
-﻿using managementorder.Models;
+﻿using managementorder.Helper;
+using managementorder.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Net.Http.Headers;
+using System.Text.Json;
 
 
 namespace managementorder.Controllers
@@ -23,12 +26,13 @@ namespace managementorder.Controllers
             try
             {
                 List<ProductViewModel> productList = new List<ProductViewModel>();
-                //HttpResponseMessage response = _httpClient.GetAsync(_configuration.GetValue<string>("ApiParam:serviceprodurl")).Result; // relative endpoint for products
+                //HttpResponseMessage response = _httpClient.GetAsync(_configuration.GetValue<string>("ApiParam:serviceprodurl")).Result; 
                 //if (response.IsSuccessStatusCode)
                 //{
                 //    var data = response.Content.ReadAsStringAsync().Result;
                 //    productList = JsonConvert.DeserializeObject<List<ProductViewModel>>(data);
-                //} comenta la llamada al api para hacer las pruebas mas rapidas ya que lo he probado
+                //}
+                //comenta la llamada al api para hacer las pruebas mas rapidas ya que lo he probado
                 productList.Add(new ProductViewModel()
                 {
                     Id = 1,
@@ -72,9 +76,72 @@ namespace managementorder.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(ProductViewModel model)
         {
-            
+            if (!ModelState.IsValid)
+            {
+                //return View(model);
+                return BadRequest(ModelState);
+            }
 
-            return View(model);
+            try
+            {
+                using var content = new MultipartFormDataContent
+                {
+                    // Add form fields
+                    { new StringContent(model.Name), "Name" },
+                    { new StringContent(model.Description), "Description" },
+                    { new StringContent(model.Price.ToString()), "Price" },
+                    { new StringContent(model.Stock.ToString()), "Stock" }
+                };
+
+                // Add images to form content
+                if (model.Images != null)
+                {
+                    foreach (var image in model.Images)
+                    {
+                        if (image.Length > 0)
+                        {
+                            using var ms = new MemoryStream();
+                            await image.CopyToAsync(ms);
+                            var fileBytes = ms.ToArray();
+                            var fileContent = new ByteArrayContent(fileBytes);
+                            fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse(image.ContentType);
+                            content.Add(fileContent, "Images", image.FileName);
+                        }
+                    }
+                }
+
+                // Send the request
+                var response = await _httpClient.PostAsync(_configuration.GetValue<string>("ApiParam:serviceprodcreateurl"), content);
+
+                // Handle response
+                if (response.IsSuccessStatusCode)
+                {
+                    //return RedirectToAction("Index", "Product"); 
+                    return Ok(model);
+                }
+                // Handle API errors
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var apiResponse = System.Text.Json.JsonSerializer.Deserialize<ApiResponse<object>>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                if (apiResponse != null && apiResponse.Errors.Any())
+                {
+                    foreach (var error in apiResponse.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error);
+                    }
+                    return StatusCode(int.Parse(apiResponse.Code), string.Join("; ", apiResponse.Errors));
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "A ocurrido un error mientras creamos el producto.");
+                    return StatusCode(500, "Error mientras creamos el producto y no obtuvimos respuesta del api.");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { error = "A ocurrido un error con el  API: " + ex.Message });
+               
+            }
+            //return View(model);
         }
     }
 }
