@@ -91,9 +91,9 @@ namespace managementorder.Controllers
                     { new StringContent(model.Description), "Description" },
                     { new StringContent(model.Price.ToString()), "Price" },
                     { new StringContent(model.Stock.ToString()), "Stock" }
-                };
+                    };
 
-                // Add images to form content
+                    // Add images to form content
                 if (model.Images != null)
                 {
                     foreach (var image in model.Images)
@@ -117,7 +117,7 @@ namespace managementorder.Controllers
                 if (response.IsSuccessStatusCode)
                 {
                     //return RedirectToAction("Index", "Product"); 
-                    return Ok(model);
+                     return Ok("OK");
                 }
                 // Handle API errors
                 var responseContent = await response.Content.ReadAsStringAsync();
