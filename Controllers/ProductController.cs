@@ -67,5 +67,14 @@ namespace managementorder.Controllers
 
             return View();
         }
+
+        // Handle the form submission for creating a new product
+        [HttpPost]
+        public async Task<IActionResult> Create(ProductViewModel model)
+        {
+            
+
+            return View(model);
+        }
     }
 }

@@ -18,5 +18,8 @@ namespace managementorder.Models
         [Required]
         [DisplayName("Descripcion")]
         public string Description { get; set; }
+
+        // This will hold the uploaded images
+        public List<IFormFile> Images { get; set; }
     }
 }
