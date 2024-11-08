@@ -21,5 +21,6 @@ namespace managementorder.Models
 
         // This will hold the uploaded images
         public List<IFormFile> Images { get; set; }
+        public ICollection<ProductImageViewModel> ProductImages { get; set; }
     }
 }
