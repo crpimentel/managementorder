@@ -60,6 +60,7 @@ namespace managementorder.Controllers
                 //    Stock = 150
 
                 //});
+                var test=productList[0].ProductImages.ToList();
                 ViewBag.ProductList = productList;
             }
             catch (Exception ex)
