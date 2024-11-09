@@ -4,7 +4,7 @@
     var AppCount = 0;
     var CardCount = 0;
     var WebCount = 0;
-    var limitOfFilter  = productList.Count % 3;
+    var limitOfFilter = productList.Count % 3;
 
 }
 <main class="main">
@@ -309,91 +309,8 @@
     <!-- Services Section -->
     <section id="services" class="services section">
 
-        <!-- Section Title -->
-        <div class="container section-title" data-aos="fade-up">
-            <h2>Services</h2>
-            <p>What we do offer</p>
-        </div><!-- End Section Title -->
+        @await Html.PartialAsync("~/Views/Client/CustomerOrders.cshtml")
 
-        <div class="container">
-
-            <div class="row gy-4">
-
-                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
-                    <div class="service-item  position-relative">
-                        <div class="icon">
-                            <i class="bi bi-cash-stack" style="color: #0dcaf0;"></i>
-                        </div>
-                        <a href="service-details.html" class="stretched-link">
-                            <h3>Nesciunt Mete</h3>
-                        </a>
-                        <p>Provident nihil minus qui consequatur non omnis maiores. Eos accusantium minus dolores iure perferendis tempore et consequatur.</p>
-                    </div>
-                </div><!-- End Service Item -->
-
-                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
-                    <div class="service-item position-relative">
-                        <div class="icon">
-                            <i class="bi bi-calendar4-week" style="color: #fd7e14;"></i>
-                        </div>
-                        <a href="service-details.html" class="stretched-link">
-                            <h3>Eosle Commodi</h3>
-                        </a>
-                        <p>Ut autem aut autem non a. Sint sint sit facilis nam iusto sint. Libero corrupti neque eum hic non ut nesciunt dolorem.</p>
-                    </div>
-                </div><!-- End Service Item -->
-
-                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
-                    <div class="service-item position-relative">
-                        <div class="icon">
-                            <i class="bi bi-chat-text" style="color: #20c997;"></i>
-                        </div>
-                        <a href="service-details.html" class="stretched-link">
-                            <h3>Ledo Markt</h3>
-                        </a>
-                        <p>Ut excepturi voluptatem nisi sed. Quidem fuga consequatur. Minus ea aut. Vel qui id voluptas adipisci eos earum corrupti.</p>
-                    </div>
-                </div><!-- End Service Item -->
-
-                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="400">
-                    <div class="service-item position-relative">
-                        <div class="icon">
-                            <i class="bi bi-credit-card-2-front" style="color: #df1529;"></i>
-                        </div>
-                        <a href="service-details.html" class="stretched-link">
-                            <h3>Asperiores Commodit</h3>
-                        </a>
-                        <p>Non et temporibus minus omnis sed dolor esse consequatur. Cupiditate sed error ea fuga sit provident adipisci neque.</p>
-                    </div>
-                </div><!-- End Service Item -->
-
-                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="500">
-                    <div class="service-item position-relative">
-                        <div class="icon">
-                            <i class="bi bi-globe" style="color: #6610f2;"></i>
-                        </div>
-                        <a href="service-details.html" class="stretched-link">
-                            <h3>Velit Doloremque</h3>
-                        </a>
-                        <p>Cumque et suscipit saepe. Est maiores autem enim facilis ut aut ipsam corporis aut. Sed animi at autem alias eius labore.</p>
-                    </div>
-                </div><!-- End Service Item -->
-
-                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="600">
-                    <div class="service-item position-relative">
-                        <div class="icon">
-                            <i class="bi bi-clock" style="color: #f3268c;"></i>
-                        </div>
-                        <a href="service-details.html" class="stretched-link">
-                            <h3>Dolori Architecto</h3>
-                        </a>
-                        <p>Hic molestias ea quibusdam eos. Fugiat enim doloremque aut neque non et debitis iure. Corrupti recusandae ducimus enim.</p>
-                    </div>
-                </div><!-- End Service Item -->
-
-            </div>
-
-        </div>
 
     </section><!-- /Services Section -->
     <!-- Portfolio Section -->
@@ -419,7 +336,7 @@
                 <div class="row gy-4 isotope-container" data-aos="fade-up" data-aos-delay="200">
                     @for (int i = 0; i < productList.Count; i++)
                     {
-                         var imageItems = productList[i].ProductImages;
+                        var imageItems = productList[i].ProductImages;
 
                         foreach (var imageItem in imageItems)
                         {
@@ -1029,4 +946,77 @@
         </div>
 
     </section><!-- /Contact Section -->
+
+
 </main>
+@section Scripts
+{
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
+
+    <script>
+        function format(d) {
+            return (
+                'Full name: ' + d.first_name + ' ' + d.last_name + '<br>' +
+                'Salary: ' + d.salary + '<br>' +
+                'The child row can contain any data you wish, including links, images, inner tables etc.'
+            );
+        }
+        function initializeCustomerOrdersTable() {
+            alert('Entro para crear el datatable y llamar GetCustomerOrdersData action ')
+            const table = new DataTable('#example', {
+                ajax: '@Url.Action("GetCustomerOrdersData", "Client")',
+                columns: [
+                    {
+                        class: 'dt-control',
+                        orderable: false,
+                        data: null,
+                        defaultContent: ''
+                    },
+                    { data: 'first_name' },
+                    { data: 'last_name' },
+                    { data: 'position' },
+                    { data: 'office' }
+                ],
+                order: [[1, 'asc']],
+                processing: true,
+                serverSide: true
+            });
+
+            // Array to track the ids of the details displayed rows
+            const detailRows = [];
+
+            table.on('click', 'tbody td.dt-control', function () {
+                let tr = event.target.closest('tr');
+                let row = table.row(tr);
+                let idx = detailRows.indexOf(tr.id);
+
+                if (row.child.isShown()) {
+                    tr.classList.remove('details');
+                    row.child.hide();
+                    detailRows.splice(idx, 1); // Remove from the open array
+                } else {
+                    tr.classList.add('details');
+                    row.child(format(row.data())).show();
+                    if (idx === -1) {
+                        detailRows.push(tr.id); // Add to the open array
+                    }
+                }
+            });
+
+            // On each draw, loop over the detailRows array and show any child rows
+            table.on('draw', () => {
+                detailRows.forEach((id, i) => {
+                    let el = document.querySelector('#' + id + ' td.dt-control');
+                    if (el) {
+                        el.dispatchEvent(new Event('click', { bubbles: true }));
+                    }
+                });
+            });
+        }
+        // Execute the function once the DOM is fully loaded
+        $(document).ready(function () {
+            initializeCustomerOrdersTable();
+        });
+    </script>
+}
