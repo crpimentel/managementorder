@@ -963,9 +963,21 @@
             );
         }
         function initializeCustomerOrdersTable() {
-            alert('Entro para crear el datatable y llamar GetCustomerOrdersData action ')
+           
             const table = new DataTable('#example', {
-                ajax: '@Url.Action("GetCustomerOrdersData", "Client")',
+                ajax: {
+                    url: '@Url.Action("GetCustomerOrdersData", "Client")',
+                    // data: function (d) {
+                    //     d.draw = d.draw; 
+                    //      alert(d.draw); 
+                    // }
+                    data: function (d) {
+                        // Add custom search parameters or modify existing ones
+                        d.draw = d.draw;  // Automatically incremented by DataTables
+                        d.search.value = 'searchTerm';  // Set default search term (for example "searchTerm")
+                        return d;
+                    }
+                },
                 columns: [
                     {
                         class: 'dt-control',
