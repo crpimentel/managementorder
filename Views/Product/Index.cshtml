@@ -402,7 +402,7 @@
         <!-- Section Title -->
         <div class="container section-title" data-aos="fade-up">
             <h2>Portfolio</h2>
-            <p>What we've done</p>
+            <p>Lo tenemos y te gusta!</p>
         </div><!-- End Section Title -->
 
         <div class="container">
@@ -423,17 +423,18 @@
 
                         foreach (var imageItem in imageItems)
                         {
-                          
+                            // Convert the image data to a base64 string
+                            var base64Image = Convert.ToBase64String(imageItem.ImageData);
+                            // Determine the image type (e.g., "image/jpeg", "image/png")
+                            var imageType = imageItem.ImageType; //"image/jpeg"; // Change this as needed if imageIte
                             if (AppCount <= limitOfFilter)
                             {
                                 AppCount++;
                                 <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-app">
-                                    <img src="data:@imageItem.ImageType;base64,@(Convert.ToBase64String(imageItem.ImageData))" class="img-fluid" alt="">
+                                    <img src="data:@imageType;base64,@base64Image" class="img-fluid" alt="">
                                     <div class="portfolio-info">
                                         <h4>@productList[i].Name</h4>
                                         <p>@productList[i].Description</p>
-                                        <a href="data:@imageItem.ImageType;base64,@(Convert.ToBase64String(imageItem.ImageData))" title="@productList[i].Name" data-gallery="portfolio-gallery-app" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                                        <a href="portfolio-details.html" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
                                     </div>
                                 </div>
                                 <!-- End Portfolio Item -->
@@ -442,12 +443,10 @@
                             {
                                 CardCount++;
                                 <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-product">
-                                    <img src="data:@imageItem.ImageType;base64,@(Convert.ToBase64String(imageItem.ImageData))" class="img-fluid" alt="">
+                                    <img src="data:@imageType;base64,@base64Image" class="img-fluid" alt="">
                                     <div class="portfolio-info">
                                         <h4>@productList[i].Name</h4>
                                         <p>@productList[i].Description</p>
-                                        <a href="data:@imageItem.ImageType;base64,@(Convert.ToBase64String(imageItem.ImageData))" title="@productList[i].Name" data-gallery="portfolio-gallery-product" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                                        <a href="portfolio-details.html" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
                                     </div>
                                 </div>
 
@@ -457,12 +456,10 @@
                             {
                                 WebCount++;
                                 <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-branding">
-                                    <img src="data:@imageItem.ImageType;base64,@(Convert.ToBase64String(imageItem.ImageData))" class="img-fluid" alt="">
+                                    <img src="data:@imageType;base64,@base64Image" class="img-fluid" alt="">
                                     <div class="portfolio-info">
                                         <h4>@productList[i].Name</h4>
                                         <p>@productList[i].Description</p>
-                                        <a href="data:@imageItem.ImageType;base64,@(Convert.ToBase64String(imageItem.ImageData))" title="@productList[i].Name" data-gallery="portfolio-gallery-branding" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                                        <a href="portfolio-details.html" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
                                     </div>
                                 </div>
                                 <!-- End Portfolio Item -->
@@ -470,12 +467,10 @@
                             else
                             {
                                 <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-app">
-                                    <img src="data:@imageItem.ImageType;base64,@(Convert.ToBase64String(imageItem.ImageData))" class="img-fluid" alt="">
+                                    <img src="data:@imageType;base64,@base64Image" class="img-fluid" alt="">
                                     <div class="portfolio-info">
                                         <h4>@productList[i].Name</h4>
                                         <p>@productList[i].Description</p>
-                                        <a href="data:@imageItem.ImageType;base64,@(Convert.ToBase64String(imageItem.ImageData))" title="@productList[i].Name" data-gallery="portfolio-gallery-app" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                                        <a href="portfolio-details.html" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
                                     </div>
                                 </div>
                             }
