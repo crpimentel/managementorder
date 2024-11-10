@@ -4,6 +4,14 @@ namespace managementorder.Controllers
 {
     public class ClientController : Controller
     {
+        private readonly HttpClient _httpClient;
+        private readonly IConfiguration _configuration;
+        // Inject HttpClient through the constructor
+        public ClientController(IHttpClientFactory httpClientFactory, IConfiguration configuration)
+        {
+            _httpClient = httpClientFactory.CreateClient("ProductApi");
+            _configuration = configuration;
+        }
         public class CustomerOrder
         {
             public string DT_RowId { get; set; }
