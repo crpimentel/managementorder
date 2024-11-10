@@ -12,6 +12,8 @@ builder.Services.AddHttpClient("ProductApi", client =>
     client.BaseAddress = new Uri(config.GetValue<string>("ApiParam:url")); // replace with actual API base URL
     client.DefaultRequestHeaders.Add("Accept", "application/json");
 });
+// Register AutoMapper with profile
+builder.Services.AddAutoMapper(typeof(AutoMapperProfile)); // Register your profile
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

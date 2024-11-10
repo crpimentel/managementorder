@@ -1,4 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using managementorder.Helper;
+using managementorder.Models;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Collections.Generic;
 
 namespace managementorder.Controllers
 {
@@ -6,22 +12,15 @@ namespace managementorder.Controllers
     {
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _configuration;
+        private readonly IMapper _mapper;
         // Inject HttpClient through the constructor
-        public ClientController(IHttpClientFactory httpClientFactory, IConfiguration configuration)
+        public ClientController(IHttpClientFactory httpClientFactory, IConfiguration configuration, IMapper mapper)
         {
             _httpClient = httpClientFactory.CreateClient("ProductApi");
             _configuration = configuration;
+            _mapper = mapper;
         }
-        public class CustomerOrder
-        {
-            public string DT_RowId { get; set; }
-            public string first_name { get; set; }
-            public string last_name { get; set; }
-            public string position { get; set; }
-            public string office { get; set; }
-            public string start_date { get; set; }
-            public string salary { get; set; }
-        }
+
         public IActionResult Index()
         {
             return View();
@@ -32,41 +31,70 @@ namespace managementorder.Controllers
         }
         // Action that provides static data for DataTables
         [HttpGet]
-        public IActionResult GetCustomerOrdersData(int draw, string searchValue)
+        public IActionResult GetCustomerOrdersData(int draw, string searchValue, [FromQuery] int start, [FromQuery] int length)
         {
-            var dataList = new List<CustomerOrder>
-                {
-                    new CustomerOrder{ DT_RowId = "row_5", first_name = "Airi", last_name = "Satou", position = "Accountant", office = "Tokyo", start_date = "28th Nov 08", salary = "$162,700" },
-                    new CustomerOrder{ DT_RowId = "row_25", first_name = "Angelica", last_name = "Ramos", position = "Chief Executive Officer (CEO)", office = "London", start_date = "9th Oct 09", salary = "$1,200,000" },
-                    new CustomerOrder{ DT_RowId = "row_3", first_name = "Ashton", last_name = "Cox", position = "Junior Technical Author", office = "San Francisco", start_date = "12th Jan 09", salary = "$86,000" },
-                    new CustomerOrder{ DT_RowId = "row_19", first_name = "Bradley", last_name = "Greer", position = "Software Engineer", office = "London", start_date = "13th Oct 12", salary = "$132,000" },
-                    new CustomerOrder{ DT_RowId = "row_28", first_name = "Brenden", last_name = "Wagner", position = "Software Engineer", office = "San Francisco", start_date = "7th Jun 11", salary = "$206,850" },
-                    new CustomerOrder{ DT_RowId = "row_6", first_name = "Brielle", last_name = "Williamson", position = "Integration Specialist", office = "New York", start_date = "2nd Dec 12", salary = "$372,000" },
-                    new CustomerOrder{ DT_RowId = "row_43", first_name = "Bruno", last_name = "Nash", position = "Software Engineer", office = "London", start_date = "3rd May 11", salary = "$163,500" },
-                    new CustomerOrder{ DT_RowId = "row_23", first_name = "Caesar", last_name = "Vance", position = "Pre-Sales Support", office = "New York", start_date = "12th Dec 11", salary = "$106,450" },
-                    new CustomerOrder{ DT_RowId = "row_51", first_name = "Cara", last_name = "Stevens", position = "Sales Assistant", office = "New York", start_date = "6th Dec 11", salary = "$145,600" },
-                    new CustomerOrder{ DT_RowId = "row_4", first_name = "Cedric", last_name = "Kelly", position = "Senior Javascript Developer", office = "Edinburgh", start_date = "29th Mar 12", salary = "$433,060" }
-                };
-            var counttotal = dataList.Count();
-            // Apply the search filter if a search term is provided
+            List<ClientViewModel> clientList = new List<ClientViewModel>();
+            HttpResponseMessage response = _httpClient.GetAsync(_configuration.GetValue<string>("ApiParam:serviceclientorder")).Result;
+            if (response.IsSuccessStatusCode)
+            {
+                var data = response.Content.ReadAsStringAsync().Result;
+                clientList = JsonConvert.DeserializeObject<List<ClientViewModel>>(data);
+            }
+            //Step 1: Retrieve all data from the database(for simplicity, using an in-memory list here)
+            // Using AutoMapper to map from client list  to customer order list  
+            var customerOrders = _mapper.Map<List<CustomerOrder>>(clientList); 
+            //var customerOrders = new List<CustomerOrder>
+            //    {
+            //        new CustomerOrder{ DT_RowId = "row_5",  name= "Airi", email= "Satou", orderDate = "2024-09-11T00:00:00", productName="prada",productPrice="60",productStock = "50",productDesc ="asdfasfdasf"},
+            //        new CustomerOrder{ DT_RowId = "row_4", name= "Cedric", email= "Kelly",orderDate = "2024-09-11T00:00:00", productName="prada",productPrice="60",productStock = "50",productDesc ="asdfasfdasf" },
+            //        new CustomerOrder{ DT_RowId = "row_6", name= "Cedric", email= "Kelly",orderDate = "2024-09-11T00:00:00", productName="prada",productPrice="60",productStock = "50",productDesc ="asdfasfdasf" },
+            //        new CustomerOrder{ DT_RowId = "row_7", name= "Cedric", email= "Kelly",orderDate = "2024-09-11T00:00:00", productName="prada",productPrice="60",productStock = "50",productDesc ="asdfasfdasf" },
+            //        new CustomerOrder{ DT_RowId = "row_8", name= "Cedric", email= "Kelly",orderDate = "2024-09-11T00:00:00", productName="prada",productPrice="60",productStock = "50",productDesc ="asdfasfdasf" },
+            //        new CustomerOrder{ DT_RowId = "row_9", name= "Cedric", email= "Kelly",orderDate = "2024-09-11T00:00:00", productName="prada",productPrice="60",productStock = "50",productDesc ="asdfasfdasf" },
+            //        new CustomerOrder{ DT_RowId = "row_10", name= "Cedric", email= "Kelly", orderDate = "2024-09-11T00:00:00",productName="prada",productPrice="60",productStock = "50",productDesc ="asdfasfdasf" },
+            //        new CustomerOrder{ DT_RowId = "row_11", name= "Cedric", email= "Kelly", orderDate = "2024-09-11T00:00:00",productName="prada",productPrice="60",productStock = "50",productDesc ="asdfasfdasf" },
+            //        new CustomerOrder{ DT_RowId = "row_12", name= "Cedric", email= "Kelly", orderDate = "2024-09-11T00:00:00",productName="prada",productPrice="60",productStock = "50",productDesc ="asdfasfdasf" },
+            //        new CustomerOrder{ DT_RowId = "row_13", name= "Cedric", email= "Kelly", orderDate = "2024-09-11T00:00:00",productName="prada",productPrice="60",productStock = "50",productDesc ="asdfasfdasf" },
+            //        new CustomerOrder{ DT_RowId = "row_14", name= "Cedric", email= "Kelly", orderDate = "2024-09-11T00:00:00",productName="prada",productPrice="60",productStock = "50",productDesc ="asdfasfdasf" },
+            //        new CustomerOrder{ DT_RowId = "row_15", name= "Cedric", email= "Kelly", orderDate = "2024-09-11T00:00:00",productName="prada",productPrice="60",productStock = "50",productDesc ="asdfasfdasf" },
+            //        new CustomerOrder{ DT_RowId = "row_16", name= "Cedric", email= "Kelly", orderDate = "2024-09-11T00:00:00",productName="prada",productPrice="60",productStock = "50",productDesc ="asdfasfdasf" },
+            //        new CustomerOrder{ DT_RowId = "row_17", name= "Cedric", email= "Kelly", orderDate = "2024-09-11T00:00:00",productName="prada",productPrice="60",productStock = "50",productDesc ="asdfasfdasf" },
+            //        new CustomerOrder{ DT_RowId = "row_18", name= "Cedric", email= "Kelly", orderDate = "2024-09-11T00:00:00",productName="prada",productPrice="60",productStock = "50",productDesc ="asdfasfdasf" },
+            //        new CustomerOrder{ DT_RowId = "row_19", name= "Cedric", email= "Kelly", orderDate = "2024-09-11T00:00:00",productName="prada",productPrice="60",productStock = "50",productDesc ="asdfasfdasf" },
+            //        new CustomerOrder{ DT_RowId = "row_20", name= "Cedric", email= "Kelly", orderDate = "2024-09-11T00:00:00",productName="prada",productPrice="60",productStock = "50",productDesc ="asdfasfdasf" },
+            //        new CustomerOrder{ DT_RowId = "row_21", name= "Cedric", email= "Kelly", orderDate = "2024-09-11T00:00:00",productName="prada",productPrice="60",productStock = "50",productDesc ="asdfasfdasf" },
+            //        new CustomerOrder{ DT_RowId = "row_22", name= "Cedric", email= "Kelly", orderDate = "2024-09-11T00:00:00",productName="prada",productPrice="60",productStock = "50",productDesc ="asdfasfdasf" },
+            //        new CustomerOrder{ DT_RowId = "row_23", name= "Cedric", email= "Kelly", orderDate = "2024-09-11T00:00:00",productName="prada",productPrice="60",productStock = "50",productDesc ="asdfasfdasf" },
+            //        new CustomerOrder{ DT_RowId = "row_24", name= "Cedric", email= "Kelly", orderDate = "2024-09-11T00:00:00",productName="prada",productPrice="60",productStock = "50",productDesc ="asdfasfdasf" },
+            //        new CustomerOrder{ DT_RowId = "row_25", name= "Cedric", email= "Kelly", orderDate = "2024-09-11T00:00:00",productName="prada",productPrice="60",productStock = "50",productDesc ="asdfasfdasf" },
+            //        new CustomerOrder{ DT_RowId = "row_26", name= "Cedric", email= "Kelly", orderDate = "2024-09-11T00:00:00",productName="prada",productPrice="60",productStock = "50",productDesc ="asdfasfdasf" },
+            //        new CustomerOrder{ DT_RowId = "row_27", name= "Cedric", email= "Kelly", orderDate = "2024-09-11T00:00:00",productName="prada",productPrice="60",productStock = "50",productDesc ="asdfasfdasf" },
+
+            //    };
+
+            // Step 2: Filter data based on the search value if provided
             if (!string.IsNullOrEmpty(searchValue))
             {
-                dataList = dataList
-                    .Where(c => c.first_name.Contains(searchValue, StringComparison.OrdinalIgnoreCase) ||
-                                c.last_name.Contains(searchValue, StringComparison.OrdinalIgnoreCase) ||
-                                c.position.Contains(searchValue, StringComparison.OrdinalIgnoreCase) ||
-                                c.office.Contains(searchValue, StringComparison.OrdinalIgnoreCase))
+                customerOrders = customerOrders
+                    .Where(c => c.name.Contains(searchValue, StringComparison.OrdinalIgnoreCase) ||
+                                c.email.Contains(searchValue, StringComparison.OrdinalIgnoreCase)||
+                                c.productName.Contains(searchValue, StringComparison.OrdinalIgnoreCase))
                     .ToList();
-              
+
             }
+            // Step 3: Store the count of filtered records (for DataTables' `recordsFiltered`)
+            var counttotal = customerOrders.Count();
+            // Step 4: Apply pagination to the filtered data
+            var pagedData = customerOrders.Skip(start).Take(length).ToList();
             // Return the DataTables response in the expected format
             var result = new
             {
                 draw = draw,
                 recordsTotal = counttotal,  // Total number of records available (unfiltered)
-                recordsFiltered = dataList.Count,  // Number of records after filtering by search
-                data = dataList  // The filtered data
+                recordsFiltered = customerOrders.Count,  // Number of records after filtering by search
+                data = pagedData  // The filtered data
             };
+            var lookJson=Json(result);
             return Json(result);
         }
     }

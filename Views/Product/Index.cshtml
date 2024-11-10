@@ -955,13 +955,45 @@
     <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
 
     <script>
+        // function format(d) {
+        //     return (
+        //         'Cliente: ' + d.productName+ '<br>' +
+        //         'Salary: ' + d.productName + '<br>' +
+        //         'The child row can contain any data you wish, including links, images, inner tables etc.'
+        //     );
+        // }
         function format(d) {
-            return (
-                'Full name: ' + d.first_name + ' ' + d.last_name + '<br>' +
-                'Salary: ' + d.salary + '<br>' +
-                'The child row can contain any data you wish, including links, images, inner tables etc.'
-            );
+            // Format the order data as an HTML table to look like an order summary or receipt
+            return `
+                <div style="border: 1px solid #ddd; padding: 15px; margin: 10px 0; background-color: #f9f9f9;">
+                    <h4 style="color: #333; font-weight: bold; margin-bottom: 10px;">Detalle de la orden de cliente: ${d.name}</h4>
+                    <div style="padding: 5px 0; font-size: 14px;">
+                        <strong>Email:</strong> ${d.email}<br>
+                        <strong>Orden #:</strong> ${d.orderNumber}<br>
+                        <strong>Fecha Creación:</strong> ${new Date(d.orderDate).toLocaleDateString()}
+                    </div>
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                        <thead>
+                            <tr style="background-color: #e9e9e9;">
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Producto</th>
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Precio</th>
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Cantidad</th>
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Descripción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="padding: 8px; border: 1px solid #ddd;">${d.productName}</td>
+                                <td style="padding: 8px; border: 1px solid #ddd;">$${parseFloat(d.productPrice).toFixed(2)}</td>
+                                <td style="padding: 8px; border: 1px solid #ddd;">${d.productStock}</td>
+                                <td style="padding: 8px; border: 1px solid #ddd;">${d.productDesc}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            `;
         }
+      
         function initializeCustomerOrdersTable() {
 
             const table = new DataTable('#example', {
@@ -971,7 +1003,7 @@
                         d.draw = d.draw;
                         d.searchValue = $('#dt-search-0').val();  // This is the search input field value
                         return d;
-                    }
+                    },
                 },
                language: {
                     url: "//cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json"
@@ -983,11 +1015,11 @@
                         orderable: false,
                         data: null,
                         defaultContent: ''
-                    },
-                    { data: 'first_name' },
-                    { data: 'last_name' },
-                    { data: 'position' },
-                    { data: 'office' }
+                    }, 
+                   { data: 'name' }, // Map to 'name' in the response
+                    { data: 'email' }, // Map to 'email' in the response
+                    { data: 'orderDate' }, // Map to 'orderDate' in the response
+                    { data: 'productName' }, // Map to 'productName' in the response
                 ],
                 order: [[1, 'asc']],
                 processing: true,
@@ -1018,13 +1050,12 @@
             // On each draw, loop over the detailRows array and show any child rows
             table.on('draw', () => {
                 detailRows.forEach((id, i) => {
-                    if (id === null) {
-                        alert('desplegando id : ' + id + " i: " + i);
+                    //if (id === null) {
                         let el = document.querySelector('#' + id + ' td.dt-control');
                         if (el) {
                             el.dispatchEvent(new Event('click', { bubbles: true }));
                         }
-                    }
+                    
 
                 });
             });
