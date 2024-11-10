@@ -963,21 +963,20 @@
             );
         }
         function initializeCustomerOrdersTable() {
-           
+
             const table = new DataTable('#example', {
                 ajax: {
                     url: '@Url.Action("GetCustomerOrdersData", "Client")',
-                    // data: function (d) {
-                    //     d.draw = d.draw; 
-                    //      alert(d.draw); 
-                    // }
                     data: function (d) {
-                        // Add custom search parameters or modify existing ones
-                        d.draw = d.draw;  // Automatically incremented by DataTables
-                        d.search.value = 'searchTerm';  // Set default search term (for example "searchTerm")
+                        d.draw = d.draw;
+                        d.searchValue = $('#dt-search-0').val();  // This is the search input field value
                         return d;
                     }
                 },
+               language: {
+                    url: "//cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json"
+                   },
+
                 columns: [
                     {
                         class: 'dt-control',
@@ -992,7 +991,7 @@
                 ],
                 order: [[1, 'asc']],
                 processing: true,
-                serverSide: true
+                serverSide: true,
             });
 
             // Array to track the ids of the details displayed rows
@@ -1019,10 +1018,14 @@
             // On each draw, loop over the detailRows array and show any child rows
             table.on('draw', () => {
                 detailRows.forEach((id, i) => {
-                    let el = document.querySelector('#' + id + ' td.dt-control');
-                    if (el) {
-                        el.dispatchEvent(new Event('click', { bubbles: true }));
+                    if (id === null) {
+                        alert('desplegando id : ' + id + " i: " + i);
+                        let el = document.querySelector('#' + id + ' td.dt-control');
+                        if (el) {
+                            el.dispatchEvent(new Event('click', { bubbles: true }));
+                        }
                     }
+
                 });
             });
         }
