@@ -250,47 +250,113 @@
     <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
 
     <script>
+        // function format(d) {
+        //     let ordersHtml = d.orders.map(order => {
+        //         let productsHtml = order.products.map(product => `
+        //                          <tr>
+        //                              <td style="padding: 8px; border: 1px solid #ddd;">${product.productName}</td>
+        //                              <td style="padding: 8px; border: 1px solid #ddd;">$${parseFloat(product.productPrice).toFixed(2)}</td>
+        //                              <td style="padding: 8px; border: 1px solid #ddd;">${product.productStock}</td>
+        //                              <td style="padding: 8px; border: 1px solid #ddd;">${product.productDesc}</td>
+        //                          </tr>
+        //                      `).join('');
+        //         return `
+        //                          <div style="border: 1px solid #ddd; padding: 15px; margin: 10px 0; background-color: #f9f9f9;">
+        //                              <h4 style="color: #333; font-weight: bold; margin-bottom: 10px;">Detalle de la Orden: ${order.orderNumber}</h4>
+        //                              <div style="padding: 5px 0; font-size: 14px;">
+        //                                  <strong>Fecha de Creación:</strong> ${new Date(order.orderDate).toLocaleDateString()}
+        //                              </div>
+        //                              <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+        //                                  <thead>
+        //                                      <tr style="background-color: #e9e9e9;">
+        //                                          <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Producto</th>
+        //                                          <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Precio</th>
+        //                                          <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Cantidad</th>
+        //                                          <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Descripción</th>
+        //                                      </tr>
+        //                                  </thead>
+        //                                  <tbody>
+        //                                      ${productsHtml}
+        //                                  </tbody>
+        //                              </table>
+        //                          </div>
+        //                      `;
+        //     }).join('');
+        //     return `
+        //                      <div>
+        //                          <h4 style="font-weight: bold;">Detalle del Cliente: ${d.name}</h4>
+        //                          <div style="padding: 5px 0; font-size: 14px;">
+        //                              <strong>Email:</strong> ${d.email}
+        //                          </div>
+        //                          ${ordersHtml} <!-- Insert the orders HTML here -->
+        //                      </div>
+        //                  `;
+        // }
         function format(d) {
             let ordersHtml = d.orders.map(order => {
                 let productsHtml = order.products.map(product => `
-                                 <tr>
-                                     <td style="padding: 8px; border: 1px solid #ddd;">${product.productName}</td>
-                                     <td style="padding: 8px; border: 1px solid #ddd;">$${parseFloat(product.productPrice).toFixed(2)}</td>
-                                     <td style="padding: 8px; border: 1px solid #ddd;">${product.productStock}</td>
-                                     <td style="padding: 8px; border: 1px solid #ddd;">${product.productDesc}</td>
-                                 </tr>
-                             `).join('');
+                    <tr>
+                        <td style="padding: 8px; border: 1px solid #ddd;">${product.productName}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">$${parseFloat(product.productPrice).toFixed(2)}</td>
+                                        <td style="padding: 8px; border: 1px solid #ddd;">${order.quantityProd}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">${product.productDesc}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">$${parseFloat(order.discountProd).toFixed(2)}</td>
+                    </tr>
+                `).join('');
+
                 return `
-                                 <div style="border: 1px solid #ddd; padding: 15px; margin: 10px 0; background-color: #f9f9f9;">
-                                     <h4 style="color: #333; font-weight: bold; margin-bottom: 10px;">Detalle de la Orden: ${order.orderNumber}</h4>
-                                     <div style="padding: 5px 0; font-size: 14px;">
-                                         <strong>Fecha de Creación:</strong> ${new Date(order.orderDate).toLocaleDateString()}
-                                     </div>
-                                     <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
-                                         <thead>
-                                             <tr style="background-color: #e9e9e9;">
-                                                 <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Producto</th>
-                                                 <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Precio</th>
-                                                 <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Cantidad</th>
-                                                 <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Descripción</th>
-                                             </tr>
-                                         </thead>
-                                         <tbody>
-                                             ${productsHtml}
-                                         </tbody>
-                                     </table>
-                                 </div>
-                             `;
+                    <div style="border: 1px solid #ddd; padding: 15px; margin: 10px 0; background-color: #f9f9f9;">
+                        <h4 style="color: #333; font-weight: bold; margin-bottom: 10px;">Detalle de la orden: ${order.orderNumber}</h4>
+
+                        <!-- Order Information -->
+                        <div style="padding: 5px 0; font-size: 14px;">
+                            <strong>Fecha Creación:</strong> ${new Date(order.orderDate).toLocaleDateString()}<br>
+                            <strong>Estado:</strong> ${order.statusName}<br>
+                        </div>
+
+                        <!-- Supplier Information -->
+                        <div style="padding: 5px 0; font-size: 14px;">
+                            <strong>Empresa:</strong> ${order.supplyName}<br>
+                            <strong>Contacto:</strong> ${order.contactInfo}
+                        </div>
+
+                        <!-- Product Table -->
+                        <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                            <thead>
+                                <tr style="background-color: #e9e9e9;">
+                                    <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Product</th>
+                                    <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Price</th>
+                                    <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Quantity</th>
+                                    <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Description</th>
+                                    <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Descuento</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${productsHtml}
+                            </tbody>
+                        </table>
+
+                        <!-- Totals Information -->
+                        <div style="padding: 5px 0; font-size: 14px; margin-top: 15px;">
+                            <strong>Total de productos:</strong> $${parseFloat(order.totalQuantityProd).toFixed(2)}<br>
+                            <strong>Subtotal:</strong> $${parseFloat(order.subTotal).toFixed(2)}<br>
+                            <strong>Total Discount:</strong> $${parseFloat(order.totalDiscount).toFixed(2)}<br>
+                            <strong>Itbis:</strong> $${parseFloat(order.itebis).toFixed(2)}<br>
+                            <strong>Total:</strong> $${parseFloat(order.total).toFixed(2)}
+                        </div>
+                    </div>
+                `;
             }).join('');
+
             return `
-                             <div>
-                                 <h4 style="font-weight: bold;">Detalle del Cliente: ${d.name}</h4>
-                                 <div style="padding: 5px 0; font-size: 14px;">
-                                     <strong>Email:</strong> ${d.email}
-                                 </div>
-                                 ${ordersHtml} <!-- Insert the orders HTML here -->
-                             </div>
-                         `;
+                <div>
+                     <h4 style="font-weight: bold;">Orden de : ${d.name}</h4>
+                    <div style="padding: 5px 0; font-size: 14px;">
+                        <strong>Correo:</strong> ${d.email}
+                    </div>
+                    ${ordersHtml}
+                </div>
+            `;
         }
 
         function initializeCustomerOrdersTable() {

@@ -8,5 +8,7 @@
         public string productStock { get; set; }
 
         public string productDesc { get; set; }
+
+        public string discount { get; set; }
     }
 }

@@ -14,5 +14,7 @@ namespace managementorder.Models
 
         [DisplayName("Descripcion")]
         public string Description { get; set; }
+
+        public decimal Discount { get; set; }  
     }
 }

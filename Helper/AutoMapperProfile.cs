@@ -17,6 +17,14 @@ namespace managementorder.Helper
             // Map OrderViewModel to OrderViewModelToOrder
             CreateMap<OrderViewModel, OrderViewModelToOrder>()
                 .ForMember(dest => dest.orderNumber, opt => opt.MapFrom(src => src.Id.ToString()))
+                .ForMember(dest => dest.QuantityProd, opt => opt.MapFrom(src => src.QuantityProd.ToString()))
+                .ForMember(dest => dest.TotalDiscount, opt => opt.MapFrom(src => src.TotalDiscount.ToString()))
+                .ForMember(dest => dest.SubTotal, opt => opt.MapFrom(src => src.SubTotal.ToString()))
+                .ForMember(dest => dest.Itebis, opt => opt.MapFrom(src => src.Itebis.ToString()))
+                .ForMember(dest => dest.Total, opt => opt.MapFrom(src => src.Total.ToString()))
+                .ForMember(dest => dest.StatusName, opt => opt.MapFrom(src => src.OrderStatus.StatusName.ToString()))
+                .ForMember(dest => dest.SupplyName, opt => opt.MapFrom(src => src.Supplier.Name.ToString()))
+                .ForMember(dest => dest.ContactInfo, opt => opt.MapFrom(src => src.Supplier.ContactInfo.ToString()))
                 .ForMember(dest => dest.OrderDate, opt => opt.MapFrom(src => src.OrderDate.ToString("yyyy-MM-dd")))
                 .ForMember(dest => dest.Products, opt => opt.MapFrom(src => src.OrderProducts)); // Map OrderProducts to Products
 

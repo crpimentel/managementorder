@@ -37,8 +37,16 @@ namespace managementorder.Helper
         public string DT_RowId { get; set; }
         public string name { get; set; }
         public string email { get; set; }
+
         // Relación uno-a-muchos: un cliente puede tener varias órdenes
         public List<OrderViewModelToOrder> Orders { get; set; } = new List<OrderViewModelToOrder>();
-
+        //public string QuantityProd { get; set; }
+        //public string TotalDiscount { get; set; }
+        //public string SubTotal { get; set; }
+        //public string Itebis { get; set; }
+        //public string Total { get; set; }
+        //public string StatusName { get; set; }
+        //public string SupplyName { get; set; }
+        //public string ContactInfo { get; set; }
     }
 }
