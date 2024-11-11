@@ -91,7 +91,7 @@ namespace managementorder.Controllers
                     { new StringContent(model.Description), "Description" },
                     { new StringContent(model.Price.ToString()), "Price" },
                     { new StringContent(model.Stock.ToString()), "Stock" }
-                    };
+                };
 
                     // Add images to form content
                 if (model.Images != null)
