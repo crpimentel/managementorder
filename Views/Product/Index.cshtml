@@ -281,11 +281,8 @@
                         </div>
                     </div><!-- End Info Item -->
                 </div>
-                <div class="col-lg-8">
-                    @* @Html.Action("Index", "Order") como llamar al partial creo que debere usar ajax
-                        si no hay manera de llamar directa y ahi buscar los viewbag necesarios
-                    *@
-                    @* aqui va el formulario de creacion ordenes *@
+                <div class="col-lg-8" id="divCreationOrder">
+                   
                 </div><!-- End Contact Form -->
             </div>
         </div>
@@ -425,12 +422,29 @@
                 });
             });
         }
+
+        function loadCreationOrder() {
+            $.ajax({
+                url: '@Url.Action("Index", "Order")', // URL for the AJAX request
+                type: 'GET', // HTTP method
+                success: function (result) {
+                    // Inject the result (HTML) into the target div
+                    $('#divCreationOrder').html(result);
+                },
+                error: function (xhr, status, error) {
+                    console.error("Falla al momento de cargar modulo de creación: ", error); // Error handling
+                    $('#divCreationOrder').html("<p>al momento de cargar modulo de creación.</p>");
+                }
+            });
+        }
+
         $(document).ready(function () {
             initializeCustomerOrdersTable();
-
+            loadCreationOrder();
             document.getElementById("createOrder").addEventListener("click", function (event) {
-                event.preventDefault(); // Prevent default form submission
+                event.preventDefault(); 
                 document.getElementById("order").scrollIntoView({ behavior: "smooth" });
+               
             });
         });
     </script>

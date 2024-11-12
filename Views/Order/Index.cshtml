@@ -1,107 +1,108 @@
-﻿@model OrderViewModel 
+﻿@model OrderViewModel
 
 <section id="order-creation">
-    <h2>Create Order</h2>
+    <h2>Creación de Orden </h2>
 
-    <form asp-controller="Order" asp-action="Create"  method="post" id="order-form" class="php-email-form" data-aos="fade-up" data-aos-delay="200">
-        <div>
-            <label for="ClientId">Client</label>
-            @* <select asp-for="ClientId" asp-items="ViewBag.Clients"></select> *@
+    <form asp-controller="Order" asp-action="Create" method="post" id="order-form" class="php-email-form">
+        <div class="row gy-4">
+            <div class="col-md-6">
+
+                <label for="ClientId">Client</label>
+                <select asp-for="ClientId" class="form-control" asp-items="ViewBag.Clients"></select>
+            </div>
+            <div class="col-md-6">
+
+                <label for="SupplierId">Supplier</label>@*
+                <select asp-for="SupplierId" class="form-control" asp-items="ViewBag.Suppliers"></select> *@
+            </div>
+
+            <div id="product-list" class="col-md-6">
+                <h3>Products</h3>
+                <!-- Container for added products -->
+            </div>
+            <div class="col-md-12 text-center">
+                <button type="button" onclick="addProduct()">Add Product</button>
+            </div>
+            <div class="col-md-6">
+                <input asp-for="SubTotal" class="form-control" placeholder="SubTotal" readonly />
+            </div>
+
+            <div class="col-md-6">
+                <input asp-for="TotalDiscount" class="form-control" placeholder="Total Descuento" readonly />
+            </div>
+            
+            <div class="col-md-6">
+                <input asp-for="Itebis" class="form-control" placeholder="Itbis" readonly />
+            </div>
+            <div class="col-md-6">
+                <input asp-for="Total" class="form-control" placeholder="Total" readonly />
+            </div>
+            <div class="col-md-12 text-center">
+                <div class="loading">Loading</div>
+                <div class="error-message"></div>
+                <div class="sent-message">Producto creado con éxito. Gracias!</div>
+
+                <button type="submit">Crear</button>
+            </div>
         </div>
-
-        <div>
-            <label for="SupplierId">Supplier</label>@* 
-            <select asp-for="SupplierId" asp-items="ViewBag.Suppliers"></select> *@
-        </div>
-
-        <div id="product-list">
-            <h3>Products</h3>
-            <!-- Container for added products -->
-        </div>
-
-        <button type="button" onclick="addProduct()">Add Product</button>
-
-        <!-- Totals Section -->
-        <div>
-            <label for="SubTotal">SubTotal</label>
-            <input asp-for="SubTotal" readonly />
-
-            <label for="TotalDiscount">Total Discount</label>
-            <input asp-for="TotalDiscount" readonly />
-
-            <label for="Itebis">ITBIS</label>
-            <input asp-for="Itebis" readonly />
-
-            <label for="Total">Total</label>
-            <input asp-for="Total" readonly />
-        </div>
-
-        <button type="submit">Create Order</button>
     </form>
 </section>
 
 <script>
-// Function to add a new product entry
-function addProduct() {
-    const productContainer = document.getElementById('product-list');
-    const productIndex = document.querySelectorAll('.product-entry').length;
+    // Function to add a new product entry
+    function addProduct() {
+        const productContainer = document.getElementById('product-list');
+        const productIndex = document.querySelectorAll('.product-entry').length;
 
-    // HTML structure for product entry
-    const productEntry = document.createElement('div');
-    productEntry.classList.add('product-entry');
-    productEntry.id = `product-${productIndex}`;
+        // HTML structure for product entry
+        const productEntry = document.createElement('div');
+        productEntry.classList.add('product-entry');
+        productEntry.id = `product-${productIndex}`;
 
-    productEntry.innerHTML = `
-        <label for="Products[${productIndex}].ProductId">Product</label>
-        <select name="Products[${productIndex}].ProductId" onchange="updateTotals()" required>
-            @foreach (var product in ViewBag.Products)
-            {
-                <option value="@product.Id" data-price="@product.Price" data-discount="@product.Discount">
-                    @product.Name - $@product.Price
-                </option>
-            }
-        </select>
+        productEntry.innerHTML = `
+                <label for="Products[${productIndex}].ProductId">Product</label>
 
-        <label for="Products[${productIndex}].QuantityProd">Quantity</label>
-        <input type="number" name="Products[${productIndex}].QuantityProd" min="1" value="1" oninput="updateTotals()" required />
 
-        <label for="Products[${productIndex}].DiscountProd">Discount (%)</label>
-        <input type="number" name="Products[${productIndex}].DiscountProd" min="0" max="100" value="0" oninput="updateTotals()" />
-    `;
 
-    productContainer.appendChild(productEntry);
+                        <input type="number" name="Products[${productIndex}].QuantityProd" class="form-control" placeholder="SubTotal" min="1" value="1" oninput="updateTotals()" required />
 
-    // Recalculate totals after adding a new product
-    updateTotals();
-}
 
-// AJAX function to update totals
-function updateTotals() {
-    const products = [];
+                        <input type="number" name="Products[${productIndex}].DiscountProd" class="form-control" placeholder="SubTotal" min="0" max="100" value="0" oninput="updateTotals()" />
+            `;
 
-    // Gather data for each product in the form
-    document.querySelectorAll('.product-entry').forEach(productDiv => {
-        const productId = productDiv.querySelector('select').value;
-        const quantity = parseFloat(productDiv.querySelector('input[name$="QuantityProd"]').value) || 0;
-        const discount = parseFloat(productDiv.querySelector('input[name$="DiscountProd"]').value) || 0;
+        productContainer.appendChild(productEntry);
 
-        products.push({ productId, quantity, discount });
-    });
+        // Recalculate totals after adding a new product
+        updateTotals();
+    }
 
-    // Send AJAX request to calculate totals on the server
-    fetch('/Order/CalculateTotals', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ products: products })
-    })
-    .then(response => response.json())
-    .then(data => {
-        // Update totals in the form with server response data
-        document.querySelector('input[name="SubTotal"]').value = data.subTotal.toFixed(2);
-        document.querySelector('input[name="TotalDiscount"]').value = data.totalDiscount.toFixed(2);
-        document.querySelector('input[name="Itebis"]').value = data.itbis.toFixed(2);
-        document.querySelector('input[name="Total"]').value = data.total.toFixed(2);
-    })
-    .catch(error => console.error('Error:', error));
-}
+    // AJAX function to update totals
+    function updateTotals() {
+        const products = [];
+
+        // Gather data for each product in the form
+        document.querySelectorAll('.product-entry').forEach(productDiv => {
+            const productId = productDiv.querySelector('select').value;
+            const quantity = parseFloat(productDiv.querySelector('input[name$="QuantityProd"]').value) || 0;
+            const discount = parseFloat(productDiv.querySelector('input[name$="DiscountProd"]').value) || 0;
+
+            products.push({ productId, quantity, discount });
+        });
+
+        // Send AJAX request to calculate totals on the server
+        fetch('/Order/CalculateTotals', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ products: products })
+        })
+            .then(response => response.json())
+            .then(data => {
+                // Update totals in the form with server response data
+                document.querySelector('input[name="SubTotal"]').value = data.subTotal.toFixed(2);
+                document.querySelector('input[name="TotalDiscount"]').value = data.totalDiscount.toFixed(2);
+                document.querySelector('input[name="Itebis"]').value = data.itbis.toFixed(2);
+                document.querySelector('input[name="Total"]').value = data.total.toFixed(2);
+            })
+            .catch(error => console.error('Error:', error));
+    }
 </script>
