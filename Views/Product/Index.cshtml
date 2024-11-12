@@ -252,12 +252,12 @@
             <p>Orden</p>
         </div><!-- End Section Title -->
 
-        <div class="container" data-aos="fade" data-aos-delay="100">
+        <div class="container">
 
             <div class="row gy-4">
 
                 <div class="col-lg-4">
-                    <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="200">
+                    <div class="info-item d-flex" >
                         <i class="bi bi-geo-alt flex-shrink-0"></i>
                         <div>
                             <h3>Direción Fast Order </h3>
@@ -265,7 +265,7 @@
                         </div>
                     </div><!-- End Info Item -->
 
-                    <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="300">
+                    <div class="info-item d-flex" >
                         <i class="bi bi-telephone flex-shrink-0"></i>
                         <div>
                             <h3>Llamanos </h3>
@@ -273,7 +273,7 @@
                         </div>
                     </div><!-- End Info Item -->
 
-                    <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="400">
+                    <div class="info-item d-flex">
                         <i class="bi bi-envelope flex-shrink-0"></i>
                         <div>
                             <h3>Email </h3>
@@ -433,7 +433,7 @@
                 },
                 error: function (xhr, status, error) {
                     console.error("Falla al momento de cargar modulo de creación: ", error); // Error handling
-                    $('#divCreationOrder').html("<p>al momento de cargar modulo de creación.</p>");
+                    $('#divCreationOrder').html("<p>Falla al momento de cargar modulo de creación.</p>");
                 }
             });
         }

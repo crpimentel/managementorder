@@ -1,12 +1,44 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using managementorder.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Newtonsoft.Json;
 
 namespace managementorder.Controllers
 {
     public class OrderController : Controller
     {
-        
+        private readonly HttpClient _httpClient;
+        private readonly IConfiguration _configuration;
+        private readonly IMapper _mapper;
+        public OrderController(IHttpClientFactory httpClientFactory, IConfiguration configuration, IMapper mapper)
+        {
+            _httpClient = httpClientFactory.CreateClient("ProductApi");
+            _configuration = configuration;
+            _mapper = mapper;
+        }
         public IActionResult Index()
         {
+            try
+            {
+                List<ClientViewModel> clientList = new List<ClientViewModel>();
+                HttpResponseMessage response = _httpClient.GetAsync(_configuration.GetValue<string>("ApiParam:serviceclientclientlist")).Result;
+                if (response.IsSuccessStatusCode)
+                {
+                    var data = response.Content.ReadAsStringAsync().Result;
+                    clientList = JsonConvert.DeserializeObject<List<ClientViewModel>>(data);
+
+                }
+
+                ViewBag.Clients = new SelectList(clientList, "Id", "Name",null)
+                     .Prepend(new SelectListItem { Value = "", Text = "Seleccione" });
+
+            }
+            catch (Exception ex)
+            {
+
+                //guardar en log
+            }
             return PartialView();
         }
 

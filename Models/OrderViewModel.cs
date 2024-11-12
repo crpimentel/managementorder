@@ -22,5 +22,6 @@
 
         public SupplierView Supplier { get; set; }
         public int ClientId { get; set; }
+        public int SupplierId { get; set; }
     }
 }

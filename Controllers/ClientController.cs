@@ -13,7 +13,6 @@ namespace managementorder.Controllers
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
-        // Inject HttpClient through the constructor
         public ClientController(IHttpClientFactory httpClientFactory, IConfiguration configuration, IMapper mapper)
         {
             _httpClient = httpClientFactory.CreateClient("ProductApi");
