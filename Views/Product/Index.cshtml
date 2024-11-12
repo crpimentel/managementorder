@@ -282,37 +282,10 @@
                     </div><!-- End Info Item -->
                 </div>
                 <div class="col-lg-8">
-                    <form asp-controller="Product" asp-action="Create" enctype="multipart/form-data" method="post" class="php-email-form" data-aos="fade-up" data-aos-delay="200">
-                        <div class="row gy-4">
-
-                            <div class="col-md-6">
-
-                                <input asp-for="Name" type="text" class="form-control" placeholder="Nombre" required="">
-                            </div>
-                            <div class="col-md-6">
-
-                                <input asp-for="Description" type="text" class="form-control" placeholder="Descripción" required="">
-                            </div>
-                            <div class="col-md-6 ">
-                                <input asp-for="Price" type="number" step="0.01" min="0" class="form-control" placeholder="Precio" required="">
-                            </div>
-
-                            <div class="col-md-12">
-                                <input asp-for="Stock" type="number" min="0" class="form-control" placeholder="Cantidad" required="">
-                            </div>
-                            <div class="col-md-12">
-                                <input asp-for="Images" type="file" multiple />
-                            </div>
-
-                            <div class="col-md-12 text-center">
-                                <div class="loading">Loading</div>
-                                <div class="error-message"></div>
-                                <div class="sent-message">Producto creado con éxito. Gracias!</div>
-
-                                <button type="submit">Crear</button>
-                            </div>
-                        </div>
-                    </form>
+                    @* @Html.Action("Index", "Order") como llamar al partial creo que debere usar ajax
+                        si no hay manera de llamar directa y ahi buscar los viewbag necesarios
+                    *@
+                    @* aqui va el formulario de creacion ordenes *@
                 </div><!-- End Contact Form -->
             </div>
         </div>

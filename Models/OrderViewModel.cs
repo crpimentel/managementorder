@@ -21,5 +21,6 @@
         public OrderStatuView OrderStatus { get; set; }
 
         public SupplierView Supplier { get; set; }
+        public int ClientId { get; set; }
     }
 }
