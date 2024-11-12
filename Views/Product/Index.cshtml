@@ -33,7 +33,7 @@
                         <div class="carousel-container">
                             <h2 class="animate__animated animate__fadeInDown">@productList[i].Name</h2>
                             <p class="animate__animated animate__fadeInUp">@productList[i].Description</p>
-                            <a href="#about" class="btn-get-started animate__animated animate__fadeInUp scrollto">Read More</a>
+                            <a href="#about" class="btn-get-started animate__animated animate__fadeInUp scrollto">Crear Producto</a>
                         </div>
                     </div>
                 }
@@ -135,23 +135,24 @@
 
                                 <button type="submit">Crear</button>
                             </div>
-
                         </div>
                     </form>
                 </div><!-- End Contact Form -->
-
             </div>
-
         </div>
-
     </section><!-- /Contact Section -->
     <!-- Services Section -->
-    <section id="services" class="services section">
+    <section id="services" class="contact section">
         <!-- Section Title -->
         <div class="container section-title" data-aos="fade-up">
             <h2>Gestión de</h2>
             <p>Ordenes</p>
         </div><!-- End Section Title -->
+        <div class="container" data-aos="fade" data-aos-delay="100">
+            <div class="php-email-form">
+                <button id="createOrder" type="submit">Crear</button>
+            </div>
+        </div>
         <div class="container" data-aos="fade" data-aos-delay="100">
             @await Html.PartialAsync("~/Views/Client/CustomerOrders.cshtml")
         </div>
@@ -243,6 +244,79 @@
         </div>
 
     </section><!-- /Portfolio Section -->
+    <section id="order" class="contact section">
+
+        <!-- Section Title -->
+        <div class="container section-title" data-aos="fade-up">
+            <h2>Creación de </h2>
+            <p>Orden</p>
+        </div><!-- End Section Title -->
+
+        <div class="container" data-aos="fade" data-aos-delay="100">
+
+            <div class="row gy-4">
+
+                <div class="col-lg-4">
+                    <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="200">
+                        <i class="bi bi-geo-alt flex-shrink-0"></i>
+                        <div>
+                            <h3>Direción Fast Order </h3>
+                            <p>Abraham Lincoln, Rep Dom.</p>
+                        </div>
+                    </div><!-- End Info Item -->
+
+                    <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="300">
+                        <i class="bi bi-telephone flex-shrink-0"></i>
+                        <div>
+                            <h3>Llamanos </h3>
+                            <p>+1 809-849-7934</p>
+                        </div>
+                    </div><!-- End Info Item -->
+
+                    <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="400">
+                        <i class="bi bi-envelope flex-shrink-0"></i>
+                        <div>
+                            <h3>Email </h3>
+                            <p>ibsfastorder@gmail.com</p>
+                        </div>
+                    </div><!-- End Info Item -->
+                </div>
+                <div class="col-lg-8">
+                    <form asp-controller="Product" asp-action="Create" enctype="multipart/form-data" method="post" class="php-email-form" data-aos="fade-up" data-aos-delay="200">
+                        <div class="row gy-4">
+
+                            <div class="col-md-6">
+
+                                <input asp-for="Name" type="text" class="form-control" placeholder="Nombre" required="">
+                            </div>
+                            <div class="col-md-6">
+
+                                <input asp-for="Description" type="text" class="form-control" placeholder="Descripción" required="">
+                            </div>
+                            <div class="col-md-6 ">
+                                <input asp-for="Price" type="number" step="0.01" min="0" class="form-control" placeholder="Precio" required="">
+                            </div>
+
+                            <div class="col-md-12">
+                                <input asp-for="Stock" type="number" min="0" class="form-control" placeholder="Cantidad" required="">
+                            </div>
+                            <div class="col-md-12">
+                                <input asp-for="Images" type="file" multiple />
+                            </div>
+
+                            <div class="col-md-12 text-center">
+                                <div class="loading">Loading</div>
+                                <div class="error-message"></div>
+                                <div class="sent-message">Producto creado con éxito. Gracias!</div>
+
+                                <button type="submit">Crear</button>
+                            </div>
+                        </div>
+                    </form>
+                </div><!-- End Contact Form -->
+            </div>
+        </div>
+    </section><!-- /Contact Section -->
 </main>
 @section Scripts
 {
@@ -250,113 +324,72 @@
     <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
 
     <script>
-        // function format(d) {
-        //     let ordersHtml = d.orders.map(order => {
-        //         let productsHtml = order.products.map(product => `
-        //                          <tr>
-        //                              <td style="padding: 8px; border: 1px solid #ddd;">${product.productName}</td>
-        //                              <td style="padding: 8px; border: 1px solid #ddd;">$${parseFloat(product.productPrice).toFixed(2)}</td>
-        //                              <td style="padding: 8px; border: 1px solid #ddd;">${product.productStock}</td>
-        //                              <td style="padding: 8px; border: 1px solid #ddd;">${product.productDesc}</td>
-        //                          </tr>
-        //                      `).join('');
-        //         return `
-        //                          <div style="border: 1px solid #ddd; padding: 15px; margin: 10px 0; background-color: #f9f9f9;">
-        //                              <h4 style="color: #333; font-weight: bold; margin-bottom: 10px;">Detalle de la Orden: ${order.orderNumber}</h4>
-        //                              <div style="padding: 5px 0; font-size: 14px;">
-        //                                  <strong>Fecha de Creación:</strong> ${new Date(order.orderDate).toLocaleDateString()}
-        //                              </div>
-        //                              <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
-        //                                  <thead>
-        //                                      <tr style="background-color: #e9e9e9;">
-        //                                          <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Producto</th>
-        //                                          <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Precio</th>
-        //                                          <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Cantidad</th>
-        //                                          <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Descripción</th>
-        //                                      </tr>
-        //                                  </thead>
-        //                                  <tbody>
-        //                                      ${productsHtml}
-        //                                  </tbody>
-        //                              </table>
-        //                          </div>
-        //                      `;
-        //     }).join('');
-        //     return `
-        //                      <div>
-        //                          <h4 style="font-weight: bold;">Detalle del Cliente: ${d.name}</h4>
-        //                          <div style="padding: 5px 0; font-size: 14px;">
-        //                              <strong>Email:</strong> ${d.email}
-        //                          </div>
-        //                          ${ordersHtml} <!-- Insert the orders HTML here -->
-        //                      </div>
-        //                  `;
-        // }
+
         function format(d) {
             let ordersHtml = d.orders.map(order => {
                 let productsHtml = order.products.map(product => `
-                    <tr>
-                        <td style="padding: 8px; border: 1px solid #ddd;">${product.productName}</td>
-                        <td style="padding: 8px; border: 1px solid #ddd;">$${parseFloat(product.productPrice).toFixed(2)}</td>
-                                        <td style="padding: 8px; border: 1px solid #ddd;">${order.quantityProd}</td>
-                        <td style="padding: 8px; border: 1px solid #ddd;">${product.productDesc}</td>
-                        <td style="padding: 8px; border: 1px solid #ddd;">$${parseFloat(order.discountProd).toFixed(2)}</td>
-                    </tr>
-                `).join('');
+                            <tr>
+                                <td style="padding: 8px; border: 1px solid #ddd;">${product.productName}</td>
+                                <td style="padding: 8px; border: 1px solid #ddd;">$${parseFloat(product.productPrice).toFixed(2)}</td>
+                                                <td style="padding: 8px; border: 1px solid #ddd;">${order.quantityProd}</td>
+                                <td style="padding: 8px; border: 1px solid #ddd;">${product.productDesc}</td>
+                                <td style="padding: 8px; border: 1px solid #ddd;">$${parseFloat(order.discountProd).toFixed(2)}</td>
+                            </tr>
+                        `).join('');
 
                 return `
-                    <div style="border: 1px solid #ddd; padding: 15px; margin: 10px 0; background-color: #f9f9f9;">
-                        <h4 style="color: #333; font-weight: bold; margin-bottom: 10px;">Detalle de la orden: ${order.orderNumber}</h4>
+                            <div style="border: 1px solid #ddd; padding: 15px; margin: 10px 0; background-color: #f9f9f9;">
+                                <h4 style="color: #333; font-weight: bold; margin-bottom: 10px;">Detalle de la orden: ${order.orderNumber}</h4>
 
-                        <!-- Order Information -->
-                        <div style="padding: 5px 0; font-size: 14px;">
-                            <strong>Fecha Creación:</strong> ${new Date(order.orderDate).toLocaleDateString()}<br>
-                            <strong>Estado:</strong> ${order.statusName}<br>
-                        </div>
+                                <!-- Order Information -->
+                                <div style="padding: 5px 0; font-size: 14px;">
+                                    <strong>Fecha Creación:</strong> ${new Date(order.orderDate).toLocaleDateString()}<br>
+                                    <strong>Estado:</strong> ${order.statusName}<br>
+                                </div>
 
-                        <!-- Supplier Information -->
-                        <div style="padding: 5px 0; font-size: 14px;">
-                            <strong>Empresa:</strong> ${order.supplyName}<br>
-                            <strong>Contacto:</strong> ${order.contactInfo}
-                        </div>
+                                <!-- Supplier Information -->
+                                <div style="padding: 5px 0; font-size: 14px;">
+                                    <strong>Empresa:</strong> ${order.supplyName}<br>
+                                    <strong>Contacto:</strong> ${order.contactInfo}
+                                </div>
 
-                        <!-- Product Table -->
-                        <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
-                            <thead>
-                                <tr style="background-color: #e9e9e9;">
-                                    <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Product</th>
-                                    <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Price</th>
-                                    <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Quantity</th>
-                                    <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Description</th>
-                                    <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Descuento</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${productsHtml}
-                            </tbody>
-                        </table>
+                                <!-- Product Table -->
+                                <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                                    <thead>
+                                        <tr style="background-color: #e9e9e9;">
+                                            <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Product</th>
+                                            <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Price</th>
+                                            <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Quantity</th>
+                                            <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Description</th>
+                                            <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Descuento</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${productsHtml}
+                                    </tbody>
+                                </table>
 
-                        <!-- Totals Information -->
-                        <div style="padding: 5px 0; font-size: 14px; margin-top: 15px;">
-                            <strong>Total de productos:</strong> $${parseFloat(order.totalQuantityProd).toFixed(2)}<br>
-                            <strong>Subtotal:</strong> $${parseFloat(order.subTotal).toFixed(2)}<br>
-                            <strong>Total Discount:</strong> $${parseFloat(order.totalDiscount).toFixed(2)}<br>
-                            <strong>Itbis:</strong> $${parseFloat(order.itebis).toFixed(2)}<br>
-                            <strong>Total:</strong> $${parseFloat(order.total).toFixed(2)}
-                        </div>
-                    </div>
-                `;
+                                <!-- Totals Information -->
+                                <div style="padding: 5px 0; font-size: 14px; margin-top: 15px;">
+                                    <strong>Total de productos:</strong> $${parseFloat(order.totalQuantityProd).toFixed(2)}<br>
+                                    <strong>Subtotal:</strong> $${parseFloat(order.subTotal).toFixed(2)}<br>
+                                    <strong>Total Discount:</strong> $${parseFloat(order.totalDiscount).toFixed(2)}<br>
+                                    <strong>Itbis:</strong> $${parseFloat(order.itebis).toFixed(2)}<br>
+                                    <strong>Total:</strong> $${parseFloat(order.total).toFixed(2)}
+                                </div>
+                            </div>
+                        `;
             }).join('');
 
             return `
-                <div>
-                     <h4 style="font-weight: bold;">Orden de : ${d.name}</h4>
-                    <div style="padding: 5px 0; font-size: 14px;">
-                        <strong>Correo:</strong> ${d.email}
-                    </div>
-                    ${ordersHtml}
-                </div>
-            `;
+                        <div>
+                             <h4 style="font-weight: bold;">Orden de : ${d.name}</h4>
+                            <div style="padding: 5px 0; font-size: 14px;">
+                                <strong>Correo:</strong> ${d.email}
+                            </div>
+                            ${ordersHtml}
+                        </div>
+                    `;
         }
 
         function initializeCustomerOrdersTable() {
@@ -421,6 +454,11 @@
         }
         $(document).ready(function () {
             initializeCustomerOrdersTable();
+
+            document.getElementById("createOrder").addEventListener("click", function (event) {
+                event.preventDefault(); // Prevent default form submission
+                document.getElementById("order").scrollIntoView({ behavior: "smooth" });
+            });
         });
     </script>
 }
