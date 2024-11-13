@@ -13,7 +13,7 @@
             <div class="col-md-6">
 
                 <label for="SupplierId">Empresa:</label>
-                <select asp-for="SupplierId" class="form-control" asp-items="ViewBag.Suppliers"></select> 
+                <select asp-for="SupplierId" class="form-control" asp-items="ViewBag.Suppliers"></select>
             </div>
 
             <div id="product-list" class="col-md-6">
@@ -21,7 +21,7 @@
                 <!-- Container for added products -->
             </div>
             <div class="col-md-12 text-center">
-                <button type="button" onclick="addProduct()">Agregar Producto</button>
+                <button type="submit" id="addProductButton" onclick="addProduct()">Agregar Producto</button>
             </div>
             <div class="col-md-6">
                 <input asp-for="SubTotal" class="form-control" placeholder="SubTotal" readonly />
@@ -30,7 +30,7 @@
             <div class="col-md-6">
                 <input asp-for="TotalDiscount" class="form-control" placeholder="Total Descuento" readonly />
             </div>
-            
+
             <div class="col-md-6">
                 <input asp-for="Itebis" class="form-control" placeholder="Itbis" readonly />
             </div>
@@ -58,17 +58,32 @@
         const productEntry = document.createElement('div');
         productEntry.classList.add('product-entry');
         productEntry.id = `product-${productIndex}`;
-
         productEntry.innerHTML = `
-                <label for="Products[${productIndex}].ProductId">Product</label>
+                                 <div class="col-md-6">
 
+                                                  <label for="Products[${productIndex}].ProductId">Product</label>
+                                                  <select name="Products[${productIndex}].ProductId" onchange="updateTotals()" required>
+                                                   @foreach (var product in ViewBag.Products)
+                                                   {
+                                                          <option value="@product.Id" data-price="@product.Price" data-discount="@product.Discount">
+                                                           @product.Name - $@product.Price
+                                                          </option>
+                                                   }
+                                                 </select>
+                                    </div>
 
+                                        <div class="col-md-6">
 
-                        <input type="number" name="Products[${productIndex}].QuantityProd" class="form-control" placeholder="SubTotal" min="1" value="1" oninput="updateTotals()" required />
+                                            <label for="Products[${productIndex}].DiscountProd">Cantidad</label>
+                                            <input type="number" name="Products[${productIndex}].QuantityProd" class="form-control" placeholder="SubTotal" min="1" value="1" oninput="updateTotals()" required />
+                                       </div>
 
+                                            <div class="col-md-6">
 
-                        <input type="number" name="Products[${productIndex}].DiscountProd" class="form-control" placeholder="SubTotal" min="0" max="100" value="0" oninput="updateTotals()" />
-            `;
+                                                <label for="Products[${productIndex}].DiscountProd">Descuento (%)</label>
+                                                    <input type="number" name="Products[${productIndex}].DiscountProd" class="form-control" placeholder="Discount" min="0" max="100" value="0" oninput="updateTotals()" />
+                                           </div>
+                    `;
 
         productContainer.appendChild(productEntry);
 
@@ -105,4 +120,10 @@
             })
             .catch(error => console.error('Error:', error));
     }
+    $(document).ready(function () {
+        $('#addProductButton').on('click', function (event) {
+            event.preventDefault(); // Prevents form submission
+            addProduct();
+        });
+    });
 </script>

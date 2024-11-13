@@ -29,9 +29,28 @@ namespace managementorder.Controllers
                     clientList = JsonConvert.DeserializeObject<List<ClientViewModel>>(data);
 
                 }
+                List<SupplierView> supplierList = new List<SupplierView>();
+                HttpResponseMessage responsesupplier = _httpClient.GetAsync(_configuration.GetValue<string>("ApiParam:servicesupplierlist")).Result;
+                if (responsesupplier.IsSuccessStatusCode)
+                {
+                    var data = responsesupplier.Content.ReadAsStringAsync().Result;
+                    supplierList = JsonConvert.DeserializeObject<List<SupplierView>>(data);
 
+                }
+                List<ProductViewModelToClient> prodList = new List<ProductViewModelToClient>();
+                HttpResponseMessage responseprod = _httpClient.GetAsync(_configuration.GetValue<string>("ApiParam:serviceprodList")).Result;
+                if (responseprod.IsSuccessStatusCode)
+                {
+                    var data = responseprod.Content.ReadAsStringAsync().Result;
+                    prodList = JsonConvert.DeserializeObject<List<ProductViewModelToClient>>(data);
+
+                }
                 ViewBag.Clients = new SelectList(clientList, "Id", "Name",null)
                      .Prepend(new SelectListItem { Value = "", Text = "Seleccione" });
+                ViewBag.Suppliers = new SelectList(supplierList, "Id", "Name", null)
+                    .Prepend(new SelectListItem { Value = "", Text = "Seleccione" });
+                ViewBag.Products = prodList;
+                                   
 
             }
             catch (Exception ex)
