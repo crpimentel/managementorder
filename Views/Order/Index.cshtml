@@ -21,7 +21,7 @@
                 <!-- Container for added products -->
             </div>
             <div class="col-md-12 text-center">
-                <button type="submit" id="addProductButton" onclick="addProduct()">Agregar Producto</button>
+                <button type="submit" id="addProductButton">Agregar Producto</button>
             </div>
             <div class="col-md-6">
                 <input asp-for="SubTotal" class="form-control" placeholder="SubTotal" readonly />
@@ -82,7 +82,11 @@
 
                                                 <label for="Products[${productIndex}].DiscountProd">Descuento (%)</label>
                                                     <input type="number" name="Products[${productIndex}].DiscountProd" class="form-control" placeholder="Discount" min="0" max="100" value="0" oninput="updateTotals()" />
-                                           </div>
+                                        </div>
+                                              <div class="col-md-6">
+                                                                    <button type="submit" id="removeProductButton" onclick="removeProduct(event, ${productIndex})">Eliminar</button>
+                                              </div>
+
                     `;
 
         productContainer.appendChild(productEntry);
@@ -119,6 +123,11 @@
                 document.querySelector('input[name="Total"]').value = data.total.toFixed(2);
             })
             .catch(error => console.error('Error:', error));
+    }
+    function removeProduct(index) {
+        event.preventDefault();
+        const product = document.getElementById(`product-${index}`);
+        product.remove();
     }
     $(document).ready(function () {
         $('#addProductButton').on('click', function (event) {
