@@ -72,7 +72,7 @@ namespace managementorder.Controllers
             var baseUrl = _configuration.GetValue<string>("ApiParam:serviceprodfilter");
             var queryParams = new Dictionary<string, string>();
             
-            decimal itbisRate = _configuration.GetValue<decimal>("ApiParam:Itebis"); 
+            decimal itbisRate = _configuration.GetValue<decimal>("Itbis"); 
 
             foreach (var product in request.Products)
             {
@@ -83,7 +83,8 @@ namespace managementorder.Controllers
                 {
                     var data = responseprod.Content.ReadAsStringAsync().Result;
 
-                    var productInfo = JsonConvert.DeserializeObject<ProductViewModelToClient>(data); ;
+                    var productInfojsom = JsonConvert.DeserializeObject<List<ProductViewModelToClient>>(data);
+                    var productInfo = productInfojsom.FirstOrDefault();
                     if (productInfo != null)
                     {
                         var productTotal = product.Quantity * productInfo.Price;

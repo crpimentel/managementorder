@@ -1,4 +1,6 @@
 ﻿@model OrderViewModel
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 <section id="order-creation" style="margin-top:-10%">
     <h2>Creación de Orden </h2>
@@ -24,17 +26,21 @@
                 <button type="submit" id="addProductButton">Agregar Producto</button>
             </div>
             <div class="col-md-6">
+                <label for="SubTotal">Subtotal:</label>
                 <input asp-for="SubTotal" class="form-control" placeholder="SubTotal" readonly />
             </div>
 
             <div class="col-md-6">
+                <label for="SubTotal">Total Descuento:</label>
                 <input asp-for="TotalDiscount" class="form-control" placeholder="Total Descuento" readonly />
             </div>
 
             <div class="col-md-6">
+                <label for="Itebis">Itbis:</label>
                 <input asp-for="Itebis" class="form-control" placeholder="Itbis" readonly />
             </div>
             <div class="col-md-6">
+                <label for="Total">Total:</label>
                 <input asp-for="Total" class="form-control" placeholder="Total" readonly />
             </div>
             <div class="col-md-12 text-center">
@@ -47,7 +53,20 @@
         </div>
     </form>
 </section>
-
+<div aria-live="polite" aria-atomic="true" style="position: relative; z-index: 1050;">
+    <div class="toast" id="duplicateToast" style="position: fixed; top: 20px; right: 20px;" data-delay="3000">
+        <div class="toast-header">
+            <strong class="mr-auto text-danger">Warning</strong>
+            <small>Just now</small>
+            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="toast-body">
+            Este producto ya fue agregado, modifica la cantidad del mismo en caso de ser necesario
+        </div>
+    </div>
+</div>
 <script>
     // Function to add a new product entry
     function addProduct() {
@@ -59,72 +78,97 @@
         productEntry.classList.add('product-entry');
         productEntry.id = `product-${productIndex}`;
         productEntry.innerHTML = `
-                                 <div class="col-md-6">
+                                         <div class="col-md-6">
 
-                                                  <label for="Products[${productIndex}].ProductId">Product</label>
-                                                  <select name="Products[${productIndex}].ProductId" onchange="updateTotals()" required>
-                                                   @foreach (var product in ViewBag.Products)
-                                                   {
-                                                          <option value="@product.Id" data-price="@product.Price" data-discount="@product.Discount">
-                                                           @product.Name - $@product.Price
-                                                          </option>
-                                                   }
-                                                 </select>
-                                    </div>
+                                                          <label for="Products[${productIndex}].ProductId">Product</label>
+                                                              <select name="Products[${productIndex}].ProductId" onchange="updateTotals(${productIndex})" required>
+                                                              <option value="" selected disabled>Seleccione</option>
+    @foreach (var product in ViewBag.Products)
+    {
+                                                                          <option value="@product.Id" data-price="@product.Price" data-discount="@product.Discount">
+            @product.Name - $@product.Price
+                                                                          </option>
+    }
+                                                         </select>
+                                            </div>
 
-                                        <div class="col-md-6">
+                                                <div class="col-md-6">
 
-                                            <label for="Products[${productIndex}].DiscountProd">Cantidad</label>
-                                            <input type="number" name="Products[${productIndex}].QuantityProd" class="form-control" placeholder="SubTotal" min="1" value="1" oninput="updateTotals()" required />
-                                       </div>
+                                                    <label for="Products[${productIndex}].DiscountProd">Cantidad</label>
+                                                    <input type="number" name="Products[${productIndex}].QuantityProd" class="form-control" placeholder="SubTotal" min="1" value="1" oninput="updateTotals()" required />
+                                               </div>
 
-                                            <div class="col-md-6">
+                                                    <div class="col-md-6">
 
-                                                <label for="Products[${productIndex}].DiscountProd">Descuento (%)</label>
-                                                    <input type="number" name="Products[${productIndex}].DiscountProd" class="form-control" placeholder="Discount" min="0" max="100" value="0" oninput="updateTotals()" />
-                                        </div>
-                                              <div class="col-md-6">
-                                                                    <button type="submit" id="removeProductButton" onclick="removeProduct(event, ${productIndex})">Eliminar</button>
-                                              </div>
+                                                        <label for="Products[${productIndex}].DiscountProd">Descuento (%)</label>
+                                                            <input type="number" name="Products[${productIndex}].DiscountProd" class="form-control" placeholder="Discount" min="0" max="100" value="0" oninput="updateTotals()" />
+                                                </div>
+                                                      <div class="col-md-6">
+                                                                            <button type="submit" id="removeProductButton" onclick="removeProduct(event, ${productIndex})">Eliminar</button>
+                                                      </div>
 
-                    `;
+                            `;
+        const selectedProductId = productEntry.querySelector(`select[name="Products[${productIndex}].ProductId"]`).value;
+        const existingProducts = document.querySelectorAll('#product-list select[name*="ProductId"]');
 
+        for (const product of existingProducts) {
+            if (product.value === selectedProductId) {
+                $('#duplicateToast').toast('show'); // Show the toast notification
+                return; // Exit the function if duplicate found
+            }
+        }
         productContainer.appendChild(productEntry);
 
         // Recalculate totals after adding a new product
-        updateTotals();
+        updateTotals(productIndex);
     }
 
     // AJAX function to update totals
-    function updateTotals() {
+    function updateTotals(productIndex) {
         const products = [];
+        const selectedProductIds = Array.from(document.querySelectorAll('#product-list select[name*="ProductId"]'))
+            .map(select => select.value);
 
+        const duplicates = selectedProductIds.filter((id, index) => selectedProductIds.indexOf(id) !== index);
+
+        if (duplicates.length > 0) {
+            $('#duplicateToast').toast('show');
+
+            const productToRemove = document.getElementById(`product-${productIndex}`);
+            if (productToRemove) {
+                productToRemove.remove();
+            }
+            return; // Exit updateTotals if a duplicate is found
+        }
         // Gather data for each product in the form
         document.querySelectorAll('.product-entry').forEach(productDiv => {
             const productId = productDiv.querySelector('select').value;
             const quantity = parseFloat(productDiv.querySelector('input[name$="QuantityProd"]').value) || 0;
             const discount = parseFloat(productDiv.querySelector('input[name$="DiscountProd"]').value) || 0;
-
-            products.push({ productId, quantity, discount });
+            if (productId !== "" && productId !== null) {
+                products.push({ productId, quantity, discount });
+            }
         });
-
-        // Send AJAX request to calculate totals on the server
-        fetch('/Order/CalculateTotals', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ products: products })
-        })
-            .then(response => response.json())
-            .then(data => {
-                // Update totals in the form with server response data
-                document.querySelector('input[name="SubTotal"]').value = data.subTotal.toFixed(2);
-                document.querySelector('input[name="TotalDiscount"]').value = data.totalDiscount.toFixed(2);
-                document.querySelector('input[name="Itebis"]').value = data.itbis.toFixed(2);
-                document.querySelector('input[name="Total"]').value = data.total.toFixed(2);
+        if (products.length > 0) {
+            // Send AJAX request to calculate totals on the server
+            fetch('/Order/CalculateTotals', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ products: products })
             })
-            .catch(error => console.error('Error:', error));
+                .then(response => response.json())
+                .then(data => {
+                    // Update totals in the form with server response data
+                    document.querySelector('input[name="SubTotal"]').value = data.subTotal.toFixed(2);
+                    document.querySelector('input[name="TotalDiscount"]').value = data.totalDiscount.toFixed(2);
+                    document.querySelector('input[name="Itebis"]').value = data.itbis.toFixed(2);
+                    document.querySelector('input[name="Total"]').value = data.total.toFixed(2);
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
     }
-    function removeProduct(event,index) {
+    function removeProduct(event, index) {
         event.preventDefault();
         const product = document.getElementById(`product-${index}`);
         product.remove();
