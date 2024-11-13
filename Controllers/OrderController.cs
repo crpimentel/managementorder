@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using managementorder.Helper;
 using managementorder.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.WebUtilities;
 using Newtonsoft.Json;
 
 namespace managementorder.Controllers
@@ -61,49 +63,52 @@ namespace managementorder.Controllers
             return PartialView();
         }
 
-        //[HttpPost]
-        //public IActionResult CalculateTotals([FromBody] OrderCalculationRequest request)
-        //{
-        //    decimal subTotal = 0;
-        //    decimal totalDiscount = 0;
-        //    decimal itbisRate = 0.18m; // 18% ITBIS
-
-        //    foreach (var product in request.Products)
-        //    {
-        //        var productInfo = _context.Products.FirstOrDefault(p => p.Id == product.ProductId);
-        //        if (productInfo != null)
-        //        {
-        //            var productTotal = product.Quantity * productInfo.Price;
-        //            var productDiscount = productTotal * (product.Discount / 100);
-
-        //            subTotal += productTotal;
-        //            totalDiscount += productDiscount;
-        //        }
-        //    }
-
-        //    decimal itbis = subTotal * itbisRate;
-        //    decimal total = subTotal - totalDiscount + itbis;
-
-        //    return Json(new
-        //    {
-        //        subTotal = subTotal,
-        //        totalDiscount = totalDiscount,
-        //        itbis = itbis,
-        //        total = total
-        //    });
-        //}
-
-        public class OrderCalculationRequest
+        [HttpPost]
+        public  IActionResult CalculateTotals([FromBody] OrderCalculationRequest request)
         {
-            public List<ProductCalculationData> Products { get; set; }
+            decimal subTotal = 0;
+            decimal totalDiscount = 0;
+            
+            var baseUrl = _configuration.GetValue<string>("ApiParam:serviceprodfilter");
+            var queryParams = new Dictionary<string, string>();
+            
+            decimal itbisRate = _configuration.GetValue<decimal>("ApiParam:Itebis"); 
+
+            foreach (var product in request.Products)
+            {
+                queryParams["id"] = product.ProductId.ToString();
+                var fullUrl = QueryHelpers.AddQueryString(baseUrl, queryParams);
+                HttpResponseMessage responseprod =   _httpClient.GetAsync(fullUrl).Result;
+                if (responseprod.IsSuccessStatusCode)
+                {
+                    var data = responseprod.Content.ReadAsStringAsync().Result;
+
+                    var productInfo = JsonConvert.DeserializeObject<ProductViewModelToClient>(data); ;
+                    if (productInfo != null)
+                    {
+                        var productTotal = product.Quantity * productInfo.Price;
+                        var productDiscount = productTotal * (product.Discount / 100);
+
+                        subTotal += productTotal;
+                        totalDiscount += productDiscount;
+                    }
+
+                }
+            }
+
+            decimal itbis = subTotal * itbisRate;
+            decimal total = subTotal - totalDiscount + itbis;
+
+            return Json(new
+            {
+                subTotal = subTotal,
+                totalDiscount = totalDiscount,
+                itbis = itbis,
+                total = total
+            });
         }
 
-        public class ProductCalculationData
-        {
-            public int ProductId { get; set; }
-            public int Quantity { get; set; }
-            public decimal Discount { get; set; }
-        }
+
 
     }
 }
